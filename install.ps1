@@ -1,10 +1,11 @@
-# Quick Claude installer - https://github.com/awnsh/quick-claude
-# Unofficial. Not affiliated with or endorsed by Anthropic.
+# Unpilot installer - https://github.com/awnsh/quick-claude
+# Not affiliated with Microsoft or Anthropic.
 #
 #   irm https://raw.githubusercontent.com/awnsh/quick-claude/main/install.ps1 | iex
 #
-# Installs per-user only (no admin): copies the popup to %LOCALAPPDATA%\QuickClaude,
-# adds a launcher to your Startup folder, and starts it.
+# To make the key do something else, build a command at https://awnsh.github.io/quick-claude
+# (it sets $env:COPILOT_KEY first). Installs per-user only (no admin): copies the script to
+# %LOCALAPPDATA%\QuickClaude, adds a launcher to your Startup folder, and starts it.
 
 $ErrorActionPreference = 'Stop'
 $RawBase = 'https://raw.githubusercontent.com/awnsh/quick-claude/main'
@@ -17,8 +18,8 @@ function Say($msg, $color = 'Gray') { Write-Host $msg -ForegroundColor $color }
 
 if ($env:OS -ne 'Windows_NT') { throw 'Quick Claude only runs on Windows.' }
 Say ''
-Say '  Quick Claude' 'White'
-Say '  Copilot key -> Claude, in a glass popup' 'DarkGray'
+Say '  Unpilot' 'White'
+Say '  Make the Copilot key do anything' 'DarkGray'
 Say ''
 
 # 1. Stop a running copy so the file can be replaced
@@ -40,6 +41,28 @@ if ($local -and (Test-Path $local)) {
 # Windows PowerShell 5.1 needs a UTF-8 BOM to read the script's symbols correctly
 [IO.File]::WriteAllText($Target, $text, (New-Object Text.UTF8Encoding($true)))
 Say "  - Installed to $InstallDir"
+
+# 2b. What should the key do? The website passes a choice in $env:COPILOT_KEY (base64 JSON).
+#     No choice and no saved config = the Claude popup. Re-running without one keeps your current setup.
+$ConfigPath = Join-Path $InstallDir 'config.json'
+$valid = 'claude', 'remap', 'app', 'url', 'keys', 'text', 'command'
+if ($env:COPILOT_KEY) {
+    try {
+        $json = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($env:COPILOT_KEY.Trim()))
+        $cfg = $json | ConvertFrom-Json
+        if ($valid -notcontains [string]$cfg.action) { throw "unknown action '$($cfg.action)'" }
+        [IO.File]::WriteAllText($ConfigPath, $json, (New-Object Text.UTF8Encoding($false)))
+    } catch {
+        Say "  ! Couldn't read your key choice ($($_.Exception.Message)). Keeping the current setup." 'Yellow'
+    }
+    Remove-Item Env:COPILOT_KEY -ErrorAction SilentlyContinue
+}
+if (-not (Test-Path $ConfigPath)) {
+    [IO.File]::WriteAllText($ConfigPath, '{"action":"claude","target":"","label":"Open the Claude popup"}', (New-Object Text.UTF8Encoding($false)))
+}
+$cfg = [IO.File]::ReadAllText($ConfigPath, [Text.Encoding]::UTF8) | ConvertFrom-Json
+$label = if ($cfg.label) { $cfg.label } else { "$($cfg.action) $($cfg.target)".Trim() }
+Say "  - Copilot key will: $label"
 
 # 3. Start at sign-in, silently
 $vbs = @'
@@ -71,6 +94,11 @@ function Find-Claude {
 }
 
 Say ''
+if ($cfg.action -ne 'claude') {
+    Say "  Ready. Press your Copilot key: it will $($label.Substring(0,1).ToLower() + $label.Substring(1))." 'Green'
+    Say ''
+    return
+}
 $claude = Find-Claude
 if (-not $claude) {
     Say '  ! Claude Code is not installed. Install it, then sign in:' 'Yellow'

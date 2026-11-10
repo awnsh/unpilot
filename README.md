@@ -1,71 +1,52 @@
-# ✳ Quick Claude
+# Unpilot
 
-**Fix that annoying Copilot key.** Your laptop came with a Copilot key you never asked for, sitting where your right Ctrl used to be. Be honest: when did you last open Copilot on purpose?
+**Make the Copilot key do anything.** Your laptop came with a Copilot key you never asked for. Be honest: when did you last open Copilot on purpose?
 
-Quick Claude turns that dead key into a Claude key. Press it, ask anything, read the answer in a liquid-glass popup, and press Esc to make it disappear.
+Tell Unpilot what that key should do instead, in plain words, and get a one-line install. Free, no account, and nothing leaves your browser.
 
-> **Windows only.** This is for Windows PCs with a Copilot key. Other keyboards and other operating systems aren't supported.
+**Make yours:** https://awnsh.github.io/quick-claude
+
+> **Windows only.** This is for Windows PCs with a Copilot key. Not affiliated with Microsoft or Anthropic.
 
 | | Copilot key does |
 | --- | --- |
 | **Before** | Opens the Microsoft Copilot app |
-| **After** | Opens a Claude popup over whatever you're doing. Copilot never opens |
-
-The Copilot key secretly sends `Win+Shift+F23`. Quick Claude catches just that combination before Windows hands it to Copilot. Uninstall and Copilot gets its key back.
-
-**Website:** https://awnsh.github.io/quick-claude
-
-> Unofficial and independent. Not affiliated with or endorsed by Anthropic. Claude is a trademark of Anthropic.
-
-## Install
-
-Open PowerShell (no admin needed) and run:
-
-```powershell
-irm https://raw.githubusercontent.com/awnsh/quick-claude/main/install.ps1 | iex
-```
-
-If the installer says Claude Code isn't signed in yet, run this once:
-
-```powershell
-claude auth login
-```
-
-Then press your Copilot key.
-
-### Requirements
-
-- Windows 11 or 10 with a Copilot key
-- A paid Claude plan that includes Claude Code (Pro or higher)
-- Claude Code: the copy bundled with the Claude desktop app works, or install it with `irm https://claude.ai/install.ps1 | iex`
-- The Claude desktop app, only for Ctrl+Enter
-
-## Keys
-
-| Key | What it does |
-| --- | --- |
-| **Copilot** | Open or close the popup |
-| **Enter** | Ask; the reply streams in under your question. Keep typing to follow up |
-| **Ctrl+Enter** | Hand the question to the Claude desktop app's Quick Entry, so it's saved to your chat history |
-| **Esc** / click away | Close the popup and clear the conversation |
+| **After** | Whatever you said: act as right Ctrl, play/pause, take a screenshot, open an app or site, type text, run a command, or open a Claude popup |
 
 ## How it works
 
-- The Copilot key sends `Win+Shift+F23`. A low-level keyboard hook catches only that combination, blocks it from reaching Copilot, and toggles the popup.
-- Questions go to the **Claude Code CLI** in print mode (`claude -p`) with streaming JSON output, tools turned off, and a short "be concise" system prompt. It uses your existing Claude plan, with no API key.
-- The glass is a blurred snapshot of the screen behind the popup, taken when it opens, drawn inside an anti-aliased pill with a sheen and specular rim.
-- **Ctrl+Enter** puts your question on the clipboard and presses `Ctrl+Alt+Space` (the Claude app's Quick Entry shortcut on Windows). It pastes and submits only after confirming the Claude app has focus, then restores your clipboard text.
-- It's one readable PowerShell file with embedded C# (WPF), and there's nothing to compile ahead of time.
+1. **Describe it** on the website, like "act like right Ctrl" or "open Spotify". The page works out what you mean right in your browser with a built-in interpreter. If Chrome's on-device AI (Gemini Nano) is available, it helps with anything the interpreter doesn't recognize. Nothing is uploaded either way.
+2. **Paste one line** into PowerShell. It looks like this:
+   ```powershell
+   $env:COPILOT_KEY='<your choice>'; irm https://raw.githubusercontent.com/awnsh/quick-claude/main/install.ps1 | iex
+   ```
+3. **Press the key.**
 
-## Customize
+The Copilot key secretly sends `Win+Shift+F23`. A small background script catches exactly that combination before Windows hands it to Copilot, and does your action instead. Every other key passes through untouched.
 
-Edit `%LOCALAPPDATA%\QuickClaude\quick-claude.ps1`:
+## What the key can do
 
-- `Model`: `sonnet` by default (`haiku` for speed, `opus` for depth)
-- `SysPrompt`: how Claude should answer
-- `GlassTint`, `Radius`, `CardWidth`: the look
+| Action | Example | What happens |
+| --- | --- | --- |
+| `remap` | `RCtrl` | Acts as that key for as long as you hold it, so Copilot + C = Ctrl + C. Works with RCtrl, RAlt, Apps, CapsLock, F13 to F24 and more |
+| `keys` | `Win+Shift+S`, `MediaPlayPause` | Presses a shortcut or media key |
+| `app` | `spotify:`, `notepad`, `C:\path\app.exe` | Opens an app, a Windows link, or an .exe |
+| `url` | `https://chatgpt.com` | Opens a website |
+| `text` | `Best,\nYour Name` | Types text where your cursor is |
+| `command` | `rundll32.exe user32.dll,LockWorkStation` | Runs a PowerShell command silently |
+| `claude` | (none) | Opens the liquid-glass Claude popup (see below) |
 
-Then restart it by signing out and back in, or by re-running the installer.
+Your choice is saved in `%LOCALAPPDATA%\QuickClaude\config.json`. You can edit it by hand and sign out and back in, or just run a new line from the website.
+
+## The Claude popup
+
+Pick "open the Claude popup" and the Copilot key opens a liquid-glass pill over whatever you're doing:
+
+- **Enter** asks, and the reply streams in under your question. Keep typing to follow up.
+- **Ctrl+Enter** hands the question to the Claude desktop app's Quick Entry, so it's saved in your chat history.
+- **Esc** or clicking away closes it and clears the conversation.
+
+It talks to Claude through the **Claude Code CLI** (`claude -p`) using your own Claude plan, with no API key. You need a paid plan that includes Claude Code, plus a one-time `claude auth login`; the installer checks this for you. The glass is a blurred snapshot of the screen behind the popup, taken when it opens and discarded when it closes.
 
 ## Uninstall
 
@@ -73,14 +54,15 @@ Then restart it by signing out and back in, or by re-running the installer.
 irm https://raw.githubusercontent.com/awnsh/quick-claude/main/uninstall.ps1 | iex
 ```
 
-This stops the popup, removes the Startup launcher, and deletes `%LOCALAPPDATA%\QuickClaude`. Your Copilot key goes back to normal.
+This stops the script, removes the Startup launcher, and deletes `%LOCALAPPDATA%\QuickClaude`. Your Copilot key opens Copilot again.
 
-## Privacy
+## Privacy & safety
 
-- Popup (Enter) chats are **not** added to your Claude chat history. Claude Code keeps a local transcript under `%USERPROFILE%\.claude\projects\`.
-- The screen snapshot used for the glass effect stays in memory and is discarded when the popup closes. It is never saved or sent anywhere.
-- The keyboard hook only acts on `F23`. Every other key passes straight through untouched.
+- The website never sends what you type anywhere.
+- The installer touches only your user folder and Startup folder. It needs no admin rights.
+- The keyboard hook only acts on `F23`.
+- `command` actions run exactly what you typed, so only use commands you understand.
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE). Copilot is a trademark of Microsoft. Claude is a trademark of Anthropic.

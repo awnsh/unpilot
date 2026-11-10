@@ -1,10 +1,10 @@
-﻿# Quick Claude - https://github.com/awnsh/quick-claude
-# Unofficial. Not affiliated with or endorsed by Anthropic.
+﻿# Unpilot - https://github.com/awnsh/quick-claude
+# Not affiliated with Microsoft or Anthropic.
 #
-# The Copilot key sends Win+Shift+F23. A low-level keyboard hook swallows it and toggles a
-# liquid-glass, pill-shaped popup that asks Claude through the Claude Code CLI and streams
-# the reply inline. Enter asks, Ctrl+Enter hands the question to the Claude desktop app's
-# Quick Entry (so it's saved to your history), Esc or clicking away closes and clears it.
+# The Copilot key sends Win+Shift+F23. A low-level keyboard hook swallows it and does the
+# action in config.json instead: act as another key, press a shortcut, open an app or URL,
+# type text, run a command, or (the default) toggle a liquid-glass Claude popup that asks
+# Claude through the Claude Code CLI and streams the reply inline.
 
 $created = $false
 $mutex = New-Object System.Threading.Mutex($true, 'Local\QuickClaudePopup', [ref]$created)
@@ -61,15 +61,104 @@ public static class QuickClaude {
     static Dispatcher ui;
     static QuickWindow win;
 
-    public static void Run() {
+    // What the Copilot key does, from config.json: claude | remap | app | url | keys | text | command
+    static string action = "claude", target = "";
+    static int remapVk;
+
+    public static void Run(string act, string tgt) {
         SetProcessDPIAware();
+        action = string.IsNullOrEmpty(act) ? "claude" : act.Trim().ToLowerInvariant();
+        target = tgt ?? "";
+        if (action == "remap") { remapVk = ParseKey(target.Trim()); if (remapVk == 0) action = "claude"; }
         ui = Dispatcher.CurrentDispatcher;
-        win = new QuickWindow();
+        if (action == "claude") win = new QuickWindow();
         hook = SetWindowsHookEx(WH_KEYBOARD_LL, proc, GetModuleHandle(null), 0);
         Dispatcher.Run();
     }
 
     static void K(int vk, bool up) { keybd_event((byte)vk, 0, up ? KEYEVENTF_KEYUP : 0, UIntPtr.Zero); }
+
+    // ---------- Actions ----------
+    [DllImport("user32.dll")] static extern uint MapVirtualKey(uint code, uint mapType);
+    [DllImport("user32.dll", SetLastError = true)] static extern uint SendInput(uint n, INPUT[] inputs, int size);
+    [StructLayout(LayoutKind.Explicit, Size = 40)]
+    struct INPUT {
+        [FieldOffset(0)] public uint type;
+        [FieldOffset(8)] public ushort wVk;
+        [FieldOffset(10)] public ushort wScan;
+        [FieldOffset(12)] public uint dwFlags;
+        [FieldOffset(16)] public uint time;
+        [FieldOffset(24)] public IntPtr extra;
+    }
+
+    static readonly Dictionary<string, int> Names = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase) {
+        {"ctrl",0x11},{"control",0x11},{"lctrl",0xA2},{"rctrl",0xA3},{"rightctrl",0xA3},{"shift",0x10},{"lshift",0xA0},{"rshift",0xA1},
+        {"alt",0x12},{"lalt",0xA4},{"ralt",0xA5},{"altgr",0xA5},{"win",0x5B},{"windows",0x5B},{"lwin",0x5B},{"rwin",0x5C},
+        {"apps",0x5D},{"menu",0x5D},{"contextmenu",0x5D},{"esc",0x1B},{"escape",0x1B},{"enter",0x0D},{"return",0x0D},{"tab",0x09},
+        {"space",0x20},{"backspace",0x08},{"delete",0x2E},{"del",0x2E},{"insert",0x2D},{"home",0x24},{"end",0x23},
+        {"pageup",0x21},{"pgup",0x21},{"pagedown",0x22},{"pgdn",0x22},{"up",0x26},{"down",0x28},{"left",0x25},{"right",0x27},
+        {"printscreen",0x2C},{"prtsc",0x2C},{"capslock",0x14},{"numlock",0x90},{"scrolllock",0x91},{"pause",0x13},
+        {"mediaplaypause",0xB3},{"playpause",0xB3},{"medianext",0xB0},{"nexttrack",0xB0},{"mediaprev",0xB1},{"prevtrack",0xB1},
+        {"mediastop",0xB2},{"volumemute",0xAD},{"mute",0xAD},{"volumedown",0xAE},{"volumeup",0xAF},
+        {"browserback",0xA6},{"browserforward",0xA7},{"browserrefresh",0xA8},{"browserhome",0xAC},
+        {".",0xBE},{"period",0xBE},{",",0xBC},{"comma",0xBC},{"/",0xBF},{";",0xBA},{"-",0xBD},{"=",0xBB},{"`",0xC0},{"[",0xDB},{"]",0xDD},{"\\",0xDC},{"'",0xDE}
+    };
+    static readonly HashSet<int> Extended = new HashSet<int> { 0xA3, 0xA5, 0x5B, 0x5C, 0x5D, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x2D, 0x2E, 0x2C, 0x90,
+        0xB0, 0xB1, 0xB2, 0xB3, 0xAD, 0xAE, 0xAF, 0xA6, 0xA7, 0xA8, 0xAC };
+
+    static int ParseKey(string name) {
+        string n = name.Replace(" ", "");
+        int vk;
+        if (Names.TryGetValue(n, out vk)) return vk;
+        if (n.Length == 1 && char.IsLetterOrDigit(n[0])) return char.ToUpperInvariant(n[0]);
+        if (n.Length >= 2 && (n[0] == 'F' || n[0] == 'f')) { int f; if (int.TryParse(n.Substring(1), out f) && f >= 1 && f <= 24) return 0x70 + f - 1; }
+        return 0;
+    }
+
+    static INPUT KeyInput(int vk, bool up) {
+        uint flags = up ? 2u : 0u;
+        if (Extended.Contains(vk)) flags |= 1u;
+        return new INPUT { type = 1, wVk = (ushort)vk, wScan = (ushort)MapVirtualKey((uint)vk, 0), dwFlags = flags };
+    }
+
+    static void Send(List<INPUT> list) { if (list.Count > 0) SendInput((uint)list.Count, list.ToArray(), Marshal.SizeOf(typeof(INPUT))); }
+
+    static void SendKey(int vk, bool up) { Send(new List<INPUT> { KeyInput(vk, up) }); }
+
+    // "Ctrl+Shift+Esc", "Win+Shift+S", "MediaPlayPause"
+    static void SendCombo(string combo) {
+        var vks = combo.Split('+').Select(s => ParseKey(s.Trim())).Where(v => v != 0).ToList();
+        if (vks.Count == 0) return;
+        var list = new List<INPUT>();
+        foreach (var v in vks) list.Add(KeyInput(v, false));
+        for (int i = vks.Count - 1; i >= 0; i--) list.Add(KeyInput(vks[i], true));
+        Send(list);
+    }
+
+    static void TypeText(string text) {
+        var list = new List<INPUT>();
+        foreach (char c in text.Replace("\r\n", "\n")) {
+            if (c == '\n') { list.Add(KeyInput(0x0D, false)); list.Add(KeyInput(0x0D, true)); continue; }
+            list.Add(new INPUT { type = 1, wScan = c, dwFlags = 4 });        // KEYEVENTF_UNICODE
+            list.Add(new INPUT { type = 1, wScan = c, dwFlags = 4 | 2 });
+        }
+        Send(list);
+    }
+
+    static void DoAction() {
+        try {
+            if (action == "app" || action == "url") {
+                Process.Start(new ProcessStartInfo(target.Trim()) { UseShellExecute = true });
+            } else if (action == "keys") {
+                SendCombo(target);
+            } else if (action == "text") {
+                TypeText(target);
+            } else if (action == "command") {
+                string enc = Convert.ToBase64String(Encoding.Unicode.GetBytes(target));
+                Process.Start(new ProcessStartInfo("powershell.exe", "-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -EncodedCommand " + enc) { UseShellExecute = false, CreateNoWindow = true });
+            }
+        } catch { }
+    }
 
     static IntPtr Hook(int n, IntPtr w, IntPtr l) {
         if (n >= 0) {
@@ -84,9 +173,12 @@ public static class QuickClaude {
                         K(VK_MASK, false); K(VK_MASK, true);      // keep Start menu from opening
                         K(VK_LSHIFT, true); K(VK_LWIN, true);     // release Win+Shift
                         swallowWinUp = swallowShiftUp = true;
-                        ui.BeginInvoke(new Action(delegate { win.Toggle(); }));
+                        if (action == "claude") ui.BeginInvoke(new Action(delegate { win.Toggle(); }));
+                        else if (action == "remap") SendKey(remapVk, false);   // hold: key goes down with the Copilot key
+                        else ui.BeginInvoke(new Action(DoAction));
                     } else if (up) {
                         f23Held = false;
+                        if (action == "remap") SendKey(remapVk, true);
                     }
                     return (IntPtr)1;
                 }
@@ -523,4 +615,14 @@ public class QuickWindow : Window {
 }
 '@
 
-[QuickClaude]::Run()
+# config.json (next to this script) says what the key does. No config = the Claude popup.
+$action = 'claude'; $target = ''
+$cfgPath = Join-Path $PSScriptRoot 'config.json'
+if (Test-Path $cfgPath) {
+    try {
+        $cfg = [IO.File]::ReadAllText($cfgPath, [Text.Encoding]::UTF8) | ConvertFrom-Json
+        if ($cfg.action) { $action = [string]$cfg.action }
+        if ($cfg.target) { $target = [string]$cfg.target }
+    } catch { }
+}
+[QuickClaude]::Run($action, $target)
