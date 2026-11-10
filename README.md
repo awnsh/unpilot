@@ -1,6 +1,8 @@
 # ✳ Quick Claude
 
-**Your Copilot key, now for Claude.** New Windows laptops ship with a Copilot key you never asked for. Quick Claude turns it into a Claude key: press it, ask anything, and the answer appears right in a liquid-glass popup. Press Esc and it's gone.
+**Fix that annoying Copilot key.** Your laptop came with a Copilot key you never asked for, sitting where your right Ctrl used to be. Be honest: when did you last open Copilot on purpose?
+
+Quick Claude turns that dead key into a Claude key. Press it, ask anything, read the answer in a liquid-glass popup, and press Esc to make it disappear.
 
 > **Windows only.** This is for Windows PCs with a Copilot key. Other keyboards and other operating systems aren't supported.
 
