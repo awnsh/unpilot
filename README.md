@@ -4,7 +4,7 @@
 
 Tell Unpilot what that key should do instead, in plain words, and get a one-line install. Free, no account, and nothing leaves your browser.
 
-**Make yours:** https://awnsh.github.io/quick-claude
+**Make yours:** https://awnsh.github.io/unpilot
 
 > **Windows only.** This is for Windows PCs with a Copilot key. Not affiliated with Microsoft or Anthropic.
 
@@ -18,7 +18,7 @@ Tell Unpilot what that key should do instead, in plain words, and get a one-line
 1. **Describe it** on the website, like "act like right Ctrl" or "open Spotify". The page works out what you mean right in your browser with a built-in interpreter. If Chrome's on-device AI (Gemini Nano) is available, it helps with anything the interpreter doesn't recognize. Nothing is uploaded either way.
 2. **Paste one line** into PowerShell. It looks like this:
    ```powershell
-   $env:COPILOT_KEY='<your choice>'; irm https://raw.githubusercontent.com/awnsh/quick-claude/main/install.ps1 | iex
+   $env:COPILOT_KEY='<your choice>'; irm https://raw.githubusercontent.com/awnsh/unpilot/main/install.ps1 | iex
    ```
 3. **Press the key.**
 
@@ -36,7 +36,7 @@ The Copilot key secretly sends `Win+Shift+F23`. A small background script catche
 | `command` | `rundll32.exe user32.dll,LockWorkStation` | Runs a PowerShell command silently |
 | `claude` | (none) | Opens the liquid-glass Claude popup (see below) |
 
-Your choice is saved in `%LOCALAPPDATA%\QuickClaude\config.json`. You can edit it by hand and sign out and back in, or just run a new line from the website.
+Your choice is saved in `%LOCALAPPDATA%\Unpilot\config.json`. You can edit it by hand and sign out and back in, or just run a new line from the website.
 
 ## The Claude popup
 
@@ -51,10 +51,10 @@ It talks to Claude through the **Claude Code CLI** (`claude -p`) using your own 
 ## Uninstall
 
 ```powershell
-irm https://raw.githubusercontent.com/awnsh/quick-claude/main/uninstall.ps1 | iex
+irm https://raw.githubusercontent.com/awnsh/unpilot/main/uninstall.ps1 | iex
 ```
 
-This stops the script, removes the Startup launcher, and deletes `%LOCALAPPDATA%\QuickClaude`. Your Copilot key opens Copilot again.
+This stops the script, removes the Startup launcher, and deletes `%LOCALAPPDATA%\Unpilot`. Your Copilot key opens Copilot again.
 
 ## Privacy & safety
 

@@ -1,4 +1,4 @@
-﻿# Unpilot - https://github.com/awnsh/quick-claude
+﻿# Unpilot - https://github.com/awnsh/unpilot
 # Not affiliated with Microsoft or Anthropic.
 #
 # The Copilot key sends Win+Shift+F23. A low-level keyboard hook swallows it and does the
@@ -7,7 +7,7 @@
 # Claude through the Claude Code CLI and streams the reply inline.
 
 $created = $false
-$mutex = New-Object System.Threading.Mutex($true, 'Local\QuickClaudePopup', [ref]$created)
+$mutex = New-Object System.Threading.Mutex($true, 'Local\UnpilotKey', [ref]$created)
 if (-not $created) { exit }   # already running
 
 Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, System.Xaml, System.Web.Extensions
@@ -40,7 +40,7 @@ using System.Windows.Media;
 using System.Windows.Media.Effects;
 using System.Windows.Threading;
 
-public static class QuickClaude {
+public static class UnpilotKey {
     const int WH_KEYBOARD_LL = 13, WM_KEYDOWN = 0x100, WM_KEYUP = 0x101, WM_SYSKEYDOWN = 0x104, WM_SYSKEYUP = 0x105;
     const uint LLKHF_INJECTED = 0x10, KEYEVENTF_KEYUP = 2;
     const int VK_F23 = 0x86, VK_LWIN = 0x5B, VK_RWIN = 0x5C, VK_LSHIFT = 0xA0, VK_RSHIFT = 0xA1, VK_MASK = 0xE8;
@@ -469,7 +469,7 @@ public class QuickWindow : Window {
         scroll.Visibility = divider.Visibility = hint.Visibility = Visibility.Visible;
         scroll.ScrollToEnd();
 
-        string dir = Path.Combine(Path.GetTempPath(), "QuickClaude");
+        string dir = Path.Combine(Path.GetTempPath(), "Unpilot");
         Directory.CreateDirectory(dir);
         var psi = new ProcessStartInfo(ClaudeExe()) {
             Arguments = "-p --output-format stream-json --verbose --include-partial-messages --tools \"\" --strict-mcp-config --model " + Model
@@ -538,7 +538,7 @@ public class QuickWindow : Window {
                 string final = streamedS;
                 if (isError || final.Length == 0) final = !string.IsNullOrEmpty(resultText) ? resultText.Trim() : rawS;
                 if (final.IndexOf("Not logged in", StringComparison.OrdinalIgnoreCase) >= 0)
-                    final = "Quick Claude isn't signed in yet. Open PowerShell, run: claude auth login   then try again.";
+                    final = "The Claude popup isn't signed in yet. Open PowerShell, run: claude auth login   then try again.";
                 if (final.Length == 0) final = "No reply came back. Try again.";
                 answer.Foreground = isError || streamedS.Length == 0 ? B("#E0A49A") : B("#FFFFFFFF");
                 if (!isError && streamedS.Length > 0) answer.Foreground = B("#FFFFFFFF");
@@ -625,4 +625,4 @@ if (Test-Path $cfgPath) {
         if ($cfg.target) { $target = [string]$cfg.target }
     } catch { }
 }
-[QuickClaude]::Run($action, $target)
+[UnpilotKey]::Run($action, $target)

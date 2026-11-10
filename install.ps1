@@ -1,41 +1,47 @@
-# Unpilot installer - https://github.com/awnsh/quick-claude
+# Unpilot installer - https://github.com/awnsh/unpilot
 # Not affiliated with Microsoft or Anthropic.
 #
-#   irm https://raw.githubusercontent.com/awnsh/quick-claude/main/install.ps1 | iex
+#   irm https://raw.githubusercontent.com/awnsh/unpilot/main/install.ps1 | iex
 #
-# To make the key do something else, build a command at https://awnsh.github.io/quick-claude
+# To make the key do something else, build a command at https://awnsh.github.io/unpilot
 # (it sets $env:COPILOT_KEY first). Installs per-user only (no admin): copies the script to
-# %LOCALAPPDATA%\QuickClaude, adds a launcher to your Startup folder, and starts it.
+# %LOCALAPPDATA%\Unpilot, adds a launcher to your Startup folder, and starts it.
 
 $ErrorActionPreference = 'Stop'
-$RawBase = 'https://raw.githubusercontent.com/awnsh/quick-claude/main'
-$InstallDir = Join-Path $env:LOCALAPPDATA 'QuickClaude'
-$Target = Join-Path $InstallDir 'quick-claude.ps1'
+$RawBase = 'https://raw.githubusercontent.com/awnsh/unpilot/main'
+$InstallDir = Join-Path $env:LOCALAPPDATA 'Unpilot'
+$Target = Join-Path $InstallDir 'unpilot.ps1'
 $Startup = [Environment]::GetFolderPath('Startup')
-$Launcher = Join-Path $Startup 'QuickClaude.vbs'
+$Launcher = Join-Path $Startup 'Unpilot.vbs'
+$OldDir = Join-Path $env:LOCALAPPDATA 'QuickClaude'      # from before the rename
 
 function Say($msg, $color = 'Gray') { Write-Host $msg -ForegroundColor $color }
 
-if ($env:OS -ne 'Windows_NT') { throw 'Quick Claude only runs on Windows.' }
+if ($env:OS -ne 'Windows_NT') { throw 'Unpilot only runs on Windows.' }
 Say ''
 Say '  Unpilot' 'White'
 Say '  Make the Copilot key do anything' 'DarkGray'
 Say ''
 
-# 1. Stop a running copy so the file can be replaced
+# 1. Stop a running copy so the file can be replaced (including the old Quick Claude name)
 Get-CimInstance Win32_Process -Filter "Name='powershell.exe'" |
-    Where-Object { $_.CommandLine -like '*quick-claude.ps1*' } |
+    Where-Object { $_.CommandLine -like '*unpilot.ps1*' -or $_.CommandLine -like '*quick-claude.ps1*' } |
     ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
 
-# 2. Copy (from a cloned repo) or download the popup script
+# 2. Copy (from a cloned repo) or download the script
 New-Item -ItemType Directory -Force $InstallDir | Out-Null
-$local = if ($PSScriptRoot) { Join-Path $PSScriptRoot 'src\quick-claude.ps1' } else { $null }
+if ((Test-Path $OldDir) -and -not (Test-Path (Join-Path $InstallDir 'config.json')) -and (Test-Path (Join-Path $OldDir 'config.json'))) {
+    Copy-Item (Join-Path $OldDir 'config.json') $InstallDir    # keep your old choice
+}
+Remove-Item (Join-Path $Startup 'QuickClaude.vbs') -Force -ErrorAction SilentlyContinue
+Remove-Item $OldDir -Recurse -Force -ErrorAction SilentlyContinue
+$local = if ($PSScriptRoot) { Join-Path $PSScriptRoot 'src\unpilot.ps1' } else { $null }
 if ($local -and (Test-Path $local)) {
     $text = [IO.File]::ReadAllText($local, [Text.Encoding]::UTF8)
     Say '  - Using the copy in this folder'
 } else {
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    $text = (New-Object Net.WebClient -Property @{ Encoding = [Text.Encoding]::UTF8 }).DownloadString("$RawBase/src/quick-claude.ps1")
+    $text = (New-Object Net.WebClient -Property @{ Encoding = [Text.Encoding]::UTF8 }).DownloadString("$RawBase/src/unpilot.ps1")
     Say '  - Downloaded the latest version'
 }
 # Windows PowerShell 5.1 needs a UTF-8 BOM to read the script's symbols correctly
@@ -66,9 +72,9 @@ Say "  - Copilot key will: $label"
 
 # 3. Start at sign-in, silently
 $vbs = @'
-' Quick Claude - starts the popup silently at sign-in.
+' Unpilot - starts the Copilot key remap silently at sign-in.
 Set sh = CreateObject("WScript.Shell")
-sh.Run "powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File """ & sh.ExpandEnvironmentStrings("%LOCALAPPDATA%") & "\QuickClaude\quick-claude.ps1""", 0, False
+sh.Run "powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File """ & sh.ExpandEnvironmentStrings("%LOCALAPPDATA%") & "\Unpilot\unpilot.ps1""", 0, False
 '@
 Set-Content -Path $Launcher -Value $vbs -Encoding ASCII
 Say '  - Set to start when you sign in'

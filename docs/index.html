@@ -236,7 +236,7 @@
       <a href="#ideas" class="hide-sm">Ideas</a>
       <a href="#claude" class="hide-sm">Claude key</a>
       <a href="#faq" class="hide-sm">FAQ</a>
-      <a href="https://github.com/awnsh/quick-claude">GitHub</a>
+      <a href="https://github.com/awnsh/unpilot">GitHub</a>
     </div>
   </nav>
 
@@ -370,7 +370,7 @@
       <details><summary>Is it really free?</summary><p>Yes. No account, no subscription, no API keys. It's open source under the MIT license. The only thing that costs anything is the optional Claude popup, which uses your own Claude plan.</p></details>
       <details><summary>Does my request get sent to an AI service?</summary><p>No. Your words are understood right here in the page by a built-in interpreter. If your Chrome has on-device AI (Gemini Nano) switched on, the page uses that for anything the interpreter doesn't recognize. That model also runs on your computer, so nothing is uploaded either way.</p></details>
       <details><summary>Can I make it act like a normal key, like right Ctrl?</summary><p>Yes. "Act as another key" holds that key down for as long as you hold the Copilot key, so Copilot + C works as Ctrl + C. Right Ctrl, Alt, the menu key, and F13 to F24 all work.</p></details>
-      <details><summary>How do I change it or undo it?</summary><p>To change it, make a new one here and run the new line; it replaces the old setup. To remove it completely, run <code>irm https://raw.githubusercontent.com/awnsh/quick-claude/main/uninstall.ps1 | iex</code> and the key goes back to opening Copilot.</p></details>
+      <details><summary>How do I change it or undo it?</summary><p>To change it, make a new one here and run the new line; it replaces the old setup. To remove it completely, run <code>irm https://raw.githubusercontent.com/awnsh/unpilot/main/uninstall.ps1 | iex</code> and the key goes back to opening Copilot.</p></details>
       <details><summary>Is it safe to paste into PowerShell?</summary><p>The command downloads one installer from this project's GitHub and runs it. You can read every line first on GitHub. It only touches your user folder and Startup folder. "Run a command" actions run whatever you typed, so only use commands you understand.</p></details>
       <details><summary>Why Windows only?</summary><p>The Copilot key only exists on Windows PCs, and the background script uses Windows features to catch it.</p></details>
       <details><summary>Who made this?</summary><p>An independent open-source project. It isn't affiliated with Microsoft or Anthropic. Copilot is a trademark of Microsoft, and Claude is a trademark of Anthropic.</p></details>
@@ -379,13 +379,13 @@
 
   <footer>
     <span>Unpilot &middot; MIT licensed &middot; Not affiliated with Microsoft or Anthropic.</span>
-    <a href="https://github.com/awnsh/quick-claude">github.com/awnsh/quick-claude</a>
+    <a href="https://github.com/awnsh/unpilot">github.com/awnsh/unpilot</a>
   </footer>
 </div>
 
 <script>
 (function () {
-  var RAW = 'https://raw.githubusercontent.com/awnsh/quick-claude/main/install.ps1';
+  var RAW = 'https://raw.githubusercontent.com/awnsh/unpilot/main/install.ps1';
 
   /* ---------- Vocabulary ---------- */
   var APPS = {
