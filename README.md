@@ -1,6 +1,12 @@
-# Unpilot
+<p align="center">
+  <img src="docs/logo.svg" width="120" alt="Unpilot logo">
+</p>
 
-**Make the Copilot key do anything.** Your laptop came with a Copilot key you never asked for. Be honest: when did you last open Copilot on purpose?
+<h1 align="center">Unpilot</h1>
+
+<p align="center"><b>Make the Copilot key do anything.</b><br>Windows only &middot; free &middot; <a href="https://awnsh.github.io/unpilot">awnsh.github.io/unpilot</a></p>
+
+Your laptop came with a Copilot key you never asked for. Be honest: when did you last open Copilot on purpose?
 
 Tell Unpilot what that key should do instead, in plain words, and get a one-line install. Free, no account, and nothing leaves your browser.
 
