@@ -6,7 +6,7 @@
 
 <p align="center"><b>Make the Copilot key do anything.</b><br>Windows only &middot; free &middot; <a href="https://awnsh.github.io/unpilot">awnsh.github.io/unpilot</a></p>
 
-Your laptop came with a Copilot key you never asked for. Be honest: when did you last open Copilot on purpose?
+Newer Windows laptops have a Copilot key where right Ctrl used to be. If you'd like it to do something else, Unpilot lets you choose.
 
 Tell Unpilot what that key should do instead, in plain words, and get a one-line install. Free, no account, and nothing leaves your browser.
 

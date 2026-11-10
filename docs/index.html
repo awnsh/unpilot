@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Unpilot</title>
-<meta name="description" content="Fix the annoying Copilot key on your Windows laptop. Describe what you want it to do, and get a one-line, free install. Nothing leaves your browser.">
+<meta name="description" content="Choose what the Copilot key on your Windows laptop does. Describe it in plain words and get a free, one-line install. Nothing leaves your browser.">
 <meta property="og:title" content="Unpilot: make the Copilot key do anything">
-<meta property="og:description" content="Who uses Copilot anyway? Tell the key what to do instead: right Ctrl, Spotify, screenshots, Claude, anything. Windows only. Free.">
+<meta property="og:description" content="Your key, your call. Make the Copilot key act as right Ctrl, play music, take screenshots, open Claude, or anything else. Windows only. Free.">
 <link rel="icon" href="logo.svg" type="image/svg+xml">
 <link rel="icon" href="icon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="icon-180.png">
@@ -128,7 +128,7 @@
   @media (max-width: 720px) { .swap { grid-template-columns: 1fr; } .swap .arrow { transform: rotate(90deg); justify-self: center; } }
   .tag { font: 500 11.5px "JetBrains Mono", monospace; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 14px; color: var(--ink-3); }
   .before { opacity: .78; }
-  .before h3 { text-decoration: line-through; text-decoration-color: rgba(27,26,23,.35); }
+
   .after { border-color: rgba(210,96,58,.45); box-shadow: 0 0 0 1px rgba(210,96,58,.12), 0 18px 44px -22px rgba(210,96,58,.4); }
   .after .tag { color: var(--accent); }
 
@@ -240,9 +240,9 @@
   </nav>
 
   <header class="hero">
-    <span class="eyebrow">Windows only &middot; for PCs stuck with a <kbd>Copilot</kbd> key</span>
+    <span class="eyebrow">Windows only &middot; for PCs with a <kbd>Copilot</kbd> key</span>
     <h1>Make the <span class="cp-icon" role="img" aria-label="Copilot"></span> key<br><em>do anything.</em></h1>
-    <p class="lede">Your laptop came with a Copilot key you never asked for. Be honest: when did you last open Copilot on purpose? Tell us what that key should do instead, in plain words, and get a one-line install. Free, no account, and nothing leaves your browser.</p>
+    <p class="lede">Newer Windows laptops have a Copilot key where right Ctrl used to be. If you'd like it to do something else, describe what you want in plain words and get a one-line install. Free, no account, and nothing leaves your browser.</p>
 
     <div class="maker">
       <form class="glass prompt" id="form" autocomplete="off">
@@ -286,10 +286,10 @@
 
   <section id="swap">
     <div class="label">Before &amp; after</div>
-    <h2>Same key. Finally useful.</h2>
-    <p class="sub">Only Windows PCs have the Copilot key, so Unpilot is Windows-only. No Copilot key? Lucky you. This one isn't for you.</p>
+    <h2>Same key. Your call.</h2>
+    <p class="sub">The Copilot key is on Windows PCs, so Unpilot is Windows-only. If your keyboard doesn't have one, this one isn't for you.</p>
     <div class="swap">
-      <div class="card before"><div class="tag">Before</div><h3>Opens Microsoft Copilot</h3><p>A whole app window you didn't want, every time you brush the key reaching for Ctrl. Close it. Again.</p></div>
+      <div class="card before"><div class="tag">Before</div><h3>Opens Copilot</h3><p>Great if you use Copilot. If you mostly hit it while reaching for right Ctrl, it can get in the way.</p></div>
       <div class="arrow" aria-hidden="true">&rarr;</div>
       <div class="card after"><div class="tag">After</div><h3>Does whatever you said</h3><p>Right Ctrl like it used to be. Play/pause. A screenshot. Your favorite app. A Claude popup. Your call, and you can change it any time.</p></div>
     </div>
@@ -305,7 +305,7 @@
   <section id="claude">
     <div class="label">The Claude key</div>
     <h2>Mac has a Claude shortcut.<br>Now Windows has a Claude <em class="accent">key</em>.</h2>
-    <p class="sub">On a Mac, the Claude app lets you press a keyboard shortcut and a little prompt bar floats up over whatever you're doing. Unpilot brings that same idea to Windows, and makes it one key: the Copilot key you weren't using anyway.</p>
+    <p class="sub">On a Mac, the Claude app lets you press a keyboard shortcut and a little prompt bar floats up over whatever you're doing. Unpilot brings that same idea to Windows, and makes it one key: the Copilot key.</p>
 
     <div class="compare" id="compare" aria-label="Animated comparison: Claude's prompt bar on a Mac and the Claude key on Windows">
       <figure class="screen">
@@ -357,7 +357,7 @@
     <div class="steps3">
       <div class="card"><h3>Describe it</h3><p>Type what you want in plain words. This page figures it out on your device, and you can fine-tune the result.</p></div>
       <div class="card"><h3>Paste one line</h3><p>Copy the command into PowerShell. It installs per-user (no admin rights), starts with Windows, and stays out of the way.</p></div>
-      <div class="card"><h3>Press the key</h3><p>The Copilot key does your thing now. Copilot never opens. Run a new line any time to change it.</p></div>
+      <div class="card"><h3>Press the key</h3><p>The Copilot key does your thing now. Run a new line any time to change it, or uninstall to get Copilot back.</p></div>
     </div>
     <p class="under">Under the hood, the Copilot key is really a shortcut: it sends <span class="inline">Win</span> + <span class="inline">Shift</span> + <span class="inline">F23</span>. A tiny background script catches exactly that combination before Windows hands it to Copilot and does your action instead. Every other key works as normal.</p>
   </section>
