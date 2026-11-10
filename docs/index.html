@@ -146,7 +146,7 @@
   .idea { text-align: left; cursor: pointer; padding: 18px 20px; border-radius: 18px; background: var(--glass); border: 1px solid var(--line); transition: border-color .15s, transform .15s, background .15s; }
   .idea:hover { border-color: rgba(240,144,108,.45); background: rgba(255,255,255,.09); transform: translateY(-2px); }
   .idea .ic { font-size: 22px; line-height: 1; }
-  .idea strong { display: block; font-weight: 500; margin-top: 10px; }
+  .idea strong { display: block; font-weight: 500; }
   .idea span { display: block; color: var(--ink-3); font-size: 13.5px; margin-top: 2px; }
 
   h2 .accent { color: var(--accent); }
@@ -642,7 +642,7 @@
   ];
   IDEAS.forEach(function (d) {
     var b = document.createElement('button'); b.type = 'button'; b.className = 'idea';
-    b.innerHTML = '<div class="ic">' + d[0] + '</div><strong></strong><span></span>';
+    b.innerHTML = '<strong></strong><span></span>';
     b.querySelector('strong').textContent = d[1]; b.querySelector('span').textContent = d[2];
     b.onclick = function () { ask.value = d[3]; window.scrollTo({ top: 0, behavior: 'smooth' }); run(d[3]); };
     $('idea-grid').appendChild(b);
