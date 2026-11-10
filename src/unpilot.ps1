@@ -281,6 +281,23 @@ public class QuickWindow : Window {
     string sessionId;
     int gen;
 
+    // A slim, rounded, translucent scrollbar instead of the default blocky one.
+    static Style ThinScrollBar() {
+        string xaml =
+            "<Style xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' TargetType='ScrollBar'>" +
+            "<Setter Property='Width' Value='8'/><Setter Property='MinWidth' Value='8'/>" +
+            "<Setter Property='Template'><Setter.Value><ControlTemplate TargetType='ScrollBar'>" +
+            "<Grid Background='Transparent'><Track x:Name='PART_Track' IsDirectionReversed='True'><Track.Thumb>" +
+            "<Thumb><Thumb.Template><ControlTemplate TargetType='Thumb'>" +
+            "<Border x:Name='b' CornerRadius='3' Width='5' Margin='0,2' HorizontalAlignment='Center' Background='#47FFFFFF'/>" +
+            "<ControlTemplate.Triggers>" +
+            "<Trigger Property='IsMouseOver' Value='True'><Setter TargetName='b' Property='Background' Value='#8CFFFFFF'/></Trigger>" +
+            "<Trigger Property='IsDragging' Value='True'><Setter TargetName='b' Property='Background' Value='#B3FFFFFF'/></Trigger>" +
+            "</ControlTemplate.Triggers></ControlTemplate></Thumb.Template></Thumb>" +
+            "</Track.Thumb></Track></Grid></ControlTemplate></Setter.Value></Setter></Style>";
+        return (Style)System.Windows.Markup.XamlReader.Parse(xaml);
+    }
+
     static Brush B(string hex) { return (Brush)new BrushConverter().ConvertFromString(hex); }
 
     public QuickWindow() {
@@ -298,7 +315,7 @@ public class QuickWindow : Window {
         // Glass layers: sheen fill fading top->bottom, bright specular rim, soft inner glow line.
         var card = new Border {
             CornerRadius = new CornerRadius(Radius),
-            Background = Vert("#2EFFFFFF", "#08FFFFFF"),
+            Background = Vert("#1AFFFFFF", "#03FFFFFF"),
             BorderBrush = Vert("#A0FFFFFF", "#22FFFFFF"),
             BorderThickness = new Thickness(1.2)
         };
@@ -344,11 +361,12 @@ public class QuickWindow : Window {
         divider = new Border { Height = 1, Background = B("#38FFFFFF"), Margin = new Thickness(0, 12, 0, 4), Visibility = Visibility.Collapsed };
         root.Children.Add(divider);
 
-        convo = new StackPanel();
+        convo = new StackPanel { Margin = new Thickness(0, 0, 10, 0) };
         scroll = new ScrollViewer {
             Content = convo, MaxHeight = 480, VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
             Visibility = Visibility.Collapsed
         };
+        scroll.Resources.Add(typeof(System.Windows.Controls.Primitives.ScrollBar), ThinScrollBar());
         root.Children.Add(scroll);
 
         hint = new TextBlock {
@@ -371,7 +389,7 @@ public class QuickWindow : Window {
         backdropCanvas.Children.Add(backdrop);
         var clipped = new Grid();
         clipped.Children.Add(backdropCanvas);
-        clipped.Children.Add(new Border { Background = B("#47121110") });
+        clipped.Children.Add(new Border { Background = B("#D0121110") });   // dark tint: keeps white text readable over bright pages
         clipped.SizeChanged += delegate {
             clipped.Clip = new RectangleGeometry(new Rect(0, 0, clipped.ActualWidth, clipped.ActualHeight), Radius, Radius);
         };
