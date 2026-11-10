@@ -39,16 +39,6 @@
   button, input, select { font: inherit; color: inherit; }
   .wrap { width: min(1080px, 100% - 32px); margin: 0 auto; }
 
-  /* ---------- Backdrop ---------- */
-  .scene { position: fixed; inset: 0; z-index: -1; overflow: hidden; }
-  .blob { position: absolute; border-radius: 50%; filter: blur(70px); opacity: .55; animation: drift 22s ease-in-out infinite alternate; }
-  .b1 { width: 46vmax; height: 46vmax; left: -12vmax; top: -14vmax; background: radial-gradient(circle at 30% 30%, #ff8a5c, #c2410c 60%, transparent 70%); }
-  .b2 { width: 40vmax; height: 40vmax; right: -10vmax; top: 6vmax; background: radial-gradient(circle at 60% 40%, #8b5cf6, #3b0764 60%, transparent 70%); animation-delay: -6s; }
-  .b3 { width: 36vmax; height: 36vmax; left: 22vmax; top: 36vmax; background: radial-gradient(circle at 50% 50%, #22d3ee, #0e7490 55%, transparent 70%); animation-delay: -12s; opacity: .35; }
-  .grain { position: absolute; inset: 0; opacity: .06; mix-blend-mode: overlay;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
-  @keyframes drift { to { transform: translate(6vmax, 4vmax) scale(1.08); } }
-  @media (prefers-reduced-motion: reduce) { .blob { animation: none; } }
 
   /* ---------- Nav ---------- */
   nav { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; }
@@ -235,7 +225,6 @@
 </style>
 </head>
 <body>
-<div class="scene" aria-hidden="true"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="grain"></div></div>
 
 <div class="wrap">
   <nav>
