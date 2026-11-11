@@ -249,7 +249,7 @@
         <kbd class="k">Copilot</kbd>
         <label for="ask" class="sr">What should the Copilot key do?</label>
         <input id="ask" placeholder="should… act like right Ctrl" maxlength="300">
-        <button class="go" id="go" type="submit">Remap it</button>
+        <button class="go" id="go" type="submit">Unpilot it</button>
       </form>
       <div class="chips" id="chips"></div>
       <p class="privacy" id="ai-note">Understood right here in your browser. Your words aren't sent anywhere.</p>
@@ -583,7 +583,7 @@
     if (!r || r.unsure) {
       go.disabled = true; go.textContent = 'Thinking…';
       var ai = await aiInterpret(text);
-      go.disabled = false; go.textContent = 'Remap it';
+      go.disabled = false; go.textContent = 'Unpilot it';
       if (ai) { ai.byAI = true; r = ai; }
     }
     if (!r) r = mk('app', '', 'Do something (pick below)', 'Couldn’t work that one out. Pick what it should do and fill in the details.', true);
